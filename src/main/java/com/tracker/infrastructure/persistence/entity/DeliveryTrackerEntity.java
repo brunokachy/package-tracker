@@ -25,7 +25,7 @@ import javax.persistence.Table;
 public class DeliveryTrackerEntity extends AbstractBaseEntity<Long>{
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private PackageEntity package_;
+    private ItemEntity item;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

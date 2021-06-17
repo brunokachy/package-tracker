@@ -1,7 +1,7 @@
 package com.tracker.infrastructure.persistence.service.impl;
 
 import com.tracker.infrastructure.persistence.entity.DeliveryTrackerEntity;
-import com.tracker.infrastructure.persistence.entity.PackageEntity;
+import com.tracker.infrastructure.persistence.entity.ItemEntity;
 import com.tracker.infrastructure.persistence.repository.DeliveryTrackerRepository;
 import com.tracker.infrastructure.persistence.service.DeliveryTrackerPersistenceService;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +16,8 @@ public class DeliveryTrackerPersistenceServiceImpl implements DeliveryTrackerPer
     private final DeliveryTrackerRepository repository;
 
     @Override
-    public List<DeliveryTrackerEntity> getAllByPackage(PackageEntity packageEntity) {
-        return repository.getAllByPackage_(packageEntity);
+    public List<DeliveryTrackerEntity> getAllByItem(ItemEntity itemEntity) {
+        return repository.getAllByItem(itemEntity);
     }
 
     @Override

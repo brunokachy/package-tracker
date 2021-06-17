@@ -1,14 +1,14 @@
 package com.tracker.entrypoint.controller;
 
 import com.tracker.core.domain.PagedData;
-import com.tracker.core.service.FetchPackageService;
-import com.tracker.core.service.RegisterPackageService;
-import com.tracker.core.service.TrackPackageService;
-import com.tracker.core.service.UpdatePackageService;
-import com.tracker.entrypoint.models.request.RegisterPackageRequest;
+import com.tracker.core.service.FetchItemService;
+import com.tracker.core.service.RegisterItemService;
+import com.tracker.core.service.TrackItemService;
+import com.tracker.core.service.UpdateItemService;
+import com.tracker.entrypoint.models.request.RegisterItemRequest;
 import com.tracker.entrypoint.models.response.ApiResponse;
 import com.tracker.entrypoint.models.response.DeliveryStatusResponse;
-import com.tracker.entrypoint.models.response.PackageResponse;
+import com.tracker.entrypoint.models.response.ItemResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
@@ -31,70 +31,70 @@ import java.util.List;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@Api(tags = "Package Tracking Management Endpoints")
-@RequestMapping(value = "/api/v1/package-tracker/", produces = MediaType.APPLICATION_JSON_VALUE)
-public class PackageTrackerController {
+@Api(tags = "Item Tracking Management Endpoints")
+@RequestMapping(value = "/api/v1/item-tracker/", produces = MediaType.APPLICATION_JSON_VALUE)
+public class ItemTrackerController {
 
-    private final RegisterPackageService registerPackageService;
-    private final UpdatePackageService updatePackageService;
-    private final TrackPackageService trackPackageService;
-    private final FetchPackageService fetchPackageService;
+    private final RegisterItemService registerItemService;
+    private final UpdateItemService updateItemService;
+    private final TrackItemService trackItemService;
+    private final FetchItemService fetchItemService;
 
 
-    @ApiOperation(value = "Register new package for pick up")
+    @ApiOperation(value = "Register new item for pick up")
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse<PackageResponse>> registerPackage(@RequestBody @Valid RegisterPackageRequest request) {
+    public ResponseEntity<ApiResponse<ItemResponse>> registerItem(@RequestBody @Valid RegisterItemRequest request) {
 
-        PackageResponse response = registerPackageService.registerPackage(request.toDomain());
+        ItemResponse response = registerItemService.registerItem(request.toDomain());
 
-        ApiResponse<PackageResponse> apiResponse = new ApiResponse<>("Processed successfully.", response);
+        ApiResponse<ItemResponse> apiResponse = new ApiResponse<>("Processed successfully.", response);
 
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
 
-    @ApiOperation(value = "Update Package Delivery Status")
+    @ApiOperation(value = "Update Item Delivery Status")
     @PutMapping(value = "{trackingId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<DeliveryStatusResponse>> updateDeliveryStatus(@PathVariable(value = "trackingId") String trackingId,
                                                                                     @RequestBody @Valid UpdateDeliveryStatusRequest request) {
 
-        DeliveryStatusResponse response = updatePackageService.updateDeliveryStatus(trackingId, request.getStatus());
+        DeliveryStatusResponse response = updateItemService.updateDeliveryStatus(trackingId, request.getStatus());
 
         ApiResponse<DeliveryStatusResponse> apiResponse = new ApiResponse<>("Processed successfully.", response);
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Returns paginated packages for delivery")
+    @ApiOperation(value = "Returns paginated items for delivery")
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse<PagedData<PackageResponse>>> fetchPackages(@ApiParam(value = "Delivery Status: CREATED, PICKED_UP, IN_TRANSIT, WAREHOUSE, DELIVERED, CANCELLED")
+    public ResponseEntity<ApiResponse<PagedData<ItemResponse>>> fetchItems(@ApiParam(value = "Delivery Status: CREATED, PICKED_UP, IN_TRANSIT, WAREHOUSE, DELIVERED, CANCELLED")
                                                                                  @Valid @Pattern(regexp = "(CREATED|PICKED_UP|IN_TRANSIT|WAREHOUSE|DELIVERED|CANCELLED)")
                                                                                  @RequestParam(value = "deliveryStatus", defaultValue = "CREATED") String deliveryStatus,
-                                                                                 @ApiParam(value = "No. of records per page. Min:1, Max:20") @Valid @Min(value = 1) @Max(value = 20) @RequestParam("size") int size,
-                                                                                 @ApiParam(value = "The index of the page to return. Min: 0") @Valid @Min(value = 0) @RequestParam("page") int page
+                                                                              @ApiParam(value = "No. of records per page. Min:1, Max:20") @Valid @Min(value = 1) @Max(value = 20) @RequestParam("size") int size,
+                                                                              @ApiParam(value = "The index of the page to return. Min: 0") @Valid @Min(value = 0) @RequestParam("page") int page
     ) {
-        PagedData<PackageResponse> response = fetchPackageService.getPagedPackages(deliveryStatus, page, size);
+        PagedData<ItemResponse> response = fetchItemService.getPagedItems(deliveryStatus, page, size);
 
-        ApiResponse<PagedData<PackageResponse>> apiResponse = new ApiResponse<>("Processed successfully.", response);
+        ApiResponse<PagedData<ItemResponse>> apiResponse = new ApiResponse<>("Processed successfully.", response);
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Current package delivery status")
+    @ApiOperation(value = "Current item delivery status")
     @GetMapping(value = "{trackingId}/status")
-    public ResponseEntity<ApiResponse<DeliveryStatusResponse>> getPackageStatus(@PathVariable(value = "trackingId") String trackingId) {
+    public ResponseEntity<ApiResponse<DeliveryStatusResponse>> getItemStatus(@PathVariable(value = "trackingId") String trackingId) {
 
-        DeliveryStatusResponse response = trackPackageService.getPackageStatus(trackingId);
+        DeliveryStatusResponse response = trackItemService.getItemDeliveryStatus(trackingId);
 
         ApiResponse<DeliveryStatusResponse> apiResponseJSON = new ApiResponse<>("Processed successfully.", response);
 
         return new ResponseEntity<>(apiResponseJSON, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Package delivery status history")
+    @ApiOperation(value = "Item delivery status history")
     @GetMapping(value = "{trackingId}/status/history")
-    public ResponseEntity<ApiResponse<List<DeliveryStatusResponse>>> getPackageStatusHistory(@PathVariable(value = "trackingId") String trackingId) {
+    public ResponseEntity<ApiResponse<List<DeliveryStatusResponse>>> getItemStatusHistory(@PathVariable(value = "trackingId") String trackingId) {
 
-        List<DeliveryStatusResponse> response = trackPackageService.getPackageStatusHistory(trackingId);
+        List<DeliveryStatusResponse> response = trackItemService.getItemStatusHistory(trackingId);
 
         ApiResponse<List<DeliveryStatusResponse>> apiResponseJSON = new ApiResponse<>("Processed successfully.", response);
 

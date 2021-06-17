@@ -2,13 +2,13 @@ package com.tracker.core.service.impl;
 
 import com.tracker.core.exception.BadRequestException;
 import com.tracker.core.exception.NotFoundException;
-import com.tracker.core.service.UpdatePackageService;
+import com.tracker.core.service.UpdateItemService;
 import com.tracker.entrypoint.models.response.DeliveryStatusResponse;
 import com.tracker.infrastructure.persistence.entity.DeliveryTrackerEntity;
-import com.tracker.infrastructure.persistence.entity.PackageEntity;
+import com.tracker.infrastructure.persistence.entity.ItemEntity;
 import com.tracker.infrastructure.persistence.entity.enums.DeliveryStatus;
 import com.tracker.infrastructure.persistence.service.DeliveryTrackerPersistenceService;
-import com.tracker.infrastructure.persistence.service.PackagePersistenceService;
+import com.tracker.infrastructure.persistence.service.ItemPersistenceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +17,9 @@ import java.time.format.DateTimeFormatter;
 
 @RequiredArgsConstructor
 @Service
-public class UpdatePackageServiceImpl implements UpdatePackageService {
+public class UpdateItemServiceImpl implements UpdateItemService {
 
-    private final PackagePersistenceService packagePersistenceService;
+    private final ItemPersistenceService itemPersistenceService;
 
     private final DeliveryTrackerPersistenceService deliveryTrackerPersistenceService;
 
@@ -27,20 +27,20 @@ public class UpdatePackageServiceImpl implements UpdatePackageService {
     @Transactional
     public DeliveryStatusResponse updateDeliveryStatus(String trackingId, String status) {
 
-        PackageEntity packageEntity = packagePersistenceService.findPackageByTrackingId(trackingId)
+        ItemEntity itemEntity = itemPersistenceService.findItemByTrackingId(trackingId)
                 .orElseThrow(() -> new NotFoundException("Package with tracking id " + trackingId + " was not found"));
 
         DeliveryStatus newStatus = DeliveryStatus.valueOf(status);
 
-        if (!canUpdateStatus(packageEntity.getCurrentStatus(), newStatus)) {
-            throw new BadRequestException("Package delivery cannot update from " + packageEntity.getCurrentStatus().name() + " to " + newStatus.name());
+        if (!canUpdateStatus(itemEntity.getCurrentStatus(), newStatus)) {
+            throw new BadRequestException("Package delivery cannot update from " + itemEntity.getCurrentStatus().name() + " to " + newStatus.name());
         }
 
-        packageEntity.setCurrentStatus(newStatus);
-        packagePersistenceService.savePackage(packageEntity);
+        itemEntity.setCurrentStatus(newStatus);
+        itemPersistenceService.saveItem(itemEntity);
 
         DeliveryTrackerEntity deliveryTrackerEntity = DeliveryTrackerEntity.builder()
-                .package_(packageEntity)
+                .item(itemEntity)
                 .status(newStatus)
                 .build();
 
@@ -48,8 +48,8 @@ public class UpdatePackageServiceImpl implements UpdatePackageService {
 
         DeliveryStatusResponse response = new DeliveryStatusResponse();
         response.setCurrentStatus(newStatus.name());
-        response.setTrackingId(packageEntity.getTrackingId());
-        response.setDateUpdated(packageEntity.getDateModified().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        response.setTrackingId(itemEntity.getTrackingId());
+        response.setDateUpdated(itemEntity.getDateModified().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
         return response;
     }

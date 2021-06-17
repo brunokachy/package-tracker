@@ -3,7 +3,7 @@ package com.tracker.entrypoint.models.response;
 import lombok.Data;
 
 @Data
-public class PackageResponse {
+public class ItemResponse {
 
     private String trackingId;
 

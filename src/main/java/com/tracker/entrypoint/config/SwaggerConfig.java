@@ -27,10 +27,11 @@ public class SwaggerConfig {
                 .build();
 
     }
+
     private ApiInfo apiInfo(String version) {
         return new ApiInfoBuilder()
-                .title("Savings Microservice")
-                .description("API services for handling customer savings goal and other saving features.")
+                .title("Package Tracker")
+                .description("API services for handling package tracker features.")
                 .version(version)
                 .build();
     }

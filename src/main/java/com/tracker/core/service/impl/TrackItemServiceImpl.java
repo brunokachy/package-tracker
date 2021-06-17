@@ -1,12 +1,12 @@
 package com.tracker.core.service.impl;
 
 import com.tracker.core.exception.NotFoundException;
-import com.tracker.core.service.TrackPackageService;
+import com.tracker.core.service.TrackItemService;
 import com.tracker.entrypoint.models.response.DeliveryStatusResponse;
 import com.tracker.infrastructure.persistence.entity.DeliveryTrackerEntity;
-import com.tracker.infrastructure.persistence.entity.PackageEntity;
+import com.tracker.infrastructure.persistence.entity.ItemEntity;
 import com.tracker.infrastructure.persistence.service.DeliveryTrackerPersistenceService;
-import com.tracker.infrastructure.persistence.service.PackagePersistenceService;
+import com.tracker.infrastructure.persistence.service.ItemPersistenceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,32 +16,32 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class TrackPackageServiceImpl implements TrackPackageService {
+public class TrackItemServiceImpl implements TrackItemService {
 
-    private final PackagePersistenceService packagePersistenceService;
+    private final ItemPersistenceService itemPersistenceService;
 
     private final DeliveryTrackerPersistenceService deliveryTrackerPersistenceService;
 
     @Override
-    public DeliveryStatusResponse getPackageStatus(String trackingId) {
-        PackageEntity packageEntity = packagePersistenceService.findPackageByTrackingId(trackingId)
+    public DeliveryStatusResponse getItemDeliveryStatus(String trackingId) {
+        ItemEntity itemEntity = itemPersistenceService.findItemByTrackingId(trackingId)
                 .orElseThrow(() -> new NotFoundException("Package with tracking id " + trackingId + " was not found"));
 
         DeliveryStatusResponse response = new DeliveryStatusResponse();
-        response.setDateUpdated(packageEntity.getDateModified().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-        response.setCurrentStatus(packageEntity.getCurrentStatus().name());
+        response.setDateUpdated(itemEntity.getDateModified().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        response.setCurrentStatus(itemEntity.getCurrentStatus().name());
         response.setTrackingId(trackingId);
 
         return response;
     }
 
     @Override
-    public List<DeliveryStatusResponse> getPackageStatusHistory(String trackingId) {
+    public List<DeliveryStatusResponse> getItemStatusHistory(String trackingId) {
 
-        PackageEntity packageEntity = packagePersistenceService.findPackageByTrackingId(trackingId)
+        ItemEntity itemEntity = itemPersistenceService.findItemByTrackingId(trackingId)
                 .orElseThrow(() -> new NotFoundException("Package with tracking id " + trackingId + " was not found"));
 
-        List<DeliveryTrackerEntity> trackers = deliveryTrackerPersistenceService.getAllByPackage(packageEntity);
+        List<DeliveryTrackerEntity> trackers = deliveryTrackerPersistenceService.getAllByItem(itemEntity);
 
         List<DeliveryStatusResponse> responses = new ArrayList<>();
 

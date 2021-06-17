@@ -19,8 +19,8 @@ import javax.persistence.Table;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "package")
-public class PackageEntity extends AbstractBaseEntity<Long>{
+@Table(name = "item")
+public class ItemEntity extends AbstractBaseEntity<Long>{
 
     @Column(nullable = false, updatable = false, unique = true)
     private String trackingId;

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class PackageModel {
+public class Item {
 
     private String trackingId;
 
@@ -22,5 +22,5 @@ public class PackageModel {
 
     private LocalDateTime dateCreated;
 
-    private LocalDateTime dateModified;
+    private LocalDateTime dateUpdated;
 }
