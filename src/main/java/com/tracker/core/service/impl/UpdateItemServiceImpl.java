@@ -50,7 +50,6 @@ public class UpdateItemServiceImpl implements UpdateItemService {
         response.setCurrentStatus(newStatus.name());
         response.setTrackingId(itemEntity.getTrackingId());
         response.setDateUpdated(itemEntity.getDateModified().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-
         return response;
     }
 
